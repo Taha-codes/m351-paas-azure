@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "Add student" if mode == "add" else "Edit student" }} – {{ app_title }}{% endblock %}
+
+{% block head %}
+<style>
+  .card { max-width: 34rem; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.5rem; }
+  .card h2 { margin: 0 0 1.25rem; font-size: 1.25rem; }
+  .field { margin-bottom: 1rem; }
+  label { display: block; font-weight: 700; margin-bottom: 0.3rem; }
+  input, select {
+    width: 100%; font: inherit; color: inherit; padding: 0.55rem 0.7rem;
+    border: 1px solid #a9b3bf; border-radius: var(--radius); background: #fff;
+  }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .error { color: var(--danger); font-size: 0.875rem; margin: 0.3rem 0 0; }
+  [aria-invalid="true"] { border-color: var(--danger); }
+  .actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+  @media (max-width: 30rem) { .row { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% macro error(name) %}{% if errors[name] %}<p class="error" id="{{ name }}-error">{{ errors[name] }}</p>{% endif %}{% endmacro %}
+{% macro invalid(name) %}{% if errors[name] %}aria-invalid="true" aria-describedby="{{ name }}-error"{% endif %}{% endmacro %}
+
+{% block content %}
+<div class="card">
+  <h2>{{ "Add student" if mode == "add" else "Edit " ~ student.name }}</h2>
+  <form method="post" novalidate>
+    <div class="row">
+      <div class="field">
+        <label for="student_id">Student ID</label>
+        <input id="student_id" name="student_id" value="{{ student.student_id or '' }}" placeholder="S1013" {{ invalid("student_id") }}>
+        {{ error("student_id") }}
+      </div>
+      <div class="field">
+        <label for="year">Year</label>
+        <select id="year" name="year" {{ invalid("year") }}>
+          <option value="">Choose…</option>
+          {% for y in range(1, 6) %}
+          <option value="{{ y }}"{% if student.year|string == y|string %} selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
+        {{ error("year") }}
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="name">Full name</label>
+      <input id="name" name="name" value="{{ student.name or '' }}" autocomplete="off" {{ invalid("name") }}>
+      {{ error("name") }}
+    </div>
+
+    <div class="field">
+      <label for="major">Major</label>
+      <select id="major" name="major" {{ invalid("major") }}>
+        <option value="">Choose…</option>
+        {% for m in majors %}
+        <option{% if student.major == m %} selected{% endif %}>{{ m }}</option>
+        {% endfor %}
+      </select>
+      {{ error("major") }}
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" value="{{ student.email or '' }}" autocomplete="off" {{ invalid("email") }}>
+      {{ error("email") }}
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="button">{{ "Add student" if mode == "add" else "Save changes" }}</button>
+      <a class="button secondary" href="{{ url_for('index') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

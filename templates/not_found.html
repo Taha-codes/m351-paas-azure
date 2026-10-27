@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>That student isn't in the database</h2>
+<p>The record may have been deleted, or the link is out of date.</p>
+<a class="button" href="{{ url_for('index') }}">Back to all students</a>
+{% endblock %}

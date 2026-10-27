@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+  .toolbar { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .toolbar h2 { margin: 0; font-size: 1.25rem; }
+  .count { color: var(--muted); font-weight: 400; }
+
+  .table-wrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; min-width: 44rem; }
+  th, td { text-align: left; padding: 0.7rem 1rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th { font-size: 0.875rem; color: var(--muted); background: var(--surface); }
+  tbody tr:last-child td { border-bottom: none; }
+  td.id { font-variant-numeric: tabular-nums; color: var(--muted); }
+  td.year { font-variant-numeric: tabular-nums; }
+  td.actions { white-space: nowrap; text-align: right; }
+  td.actions form { display: inline; margin-left: 1rem; }
+
+  .empty { padding: 2.5rem 1.25rem; text-align: center; }
+  .empty p { margin: 0 0 1rem; }
+
+  .reset { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; }
+  .reset p { margin: 0; color: var(--muted); max-width: 38rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+  <h2>Students <span class="count">({{ students|length }})</span></h2>
+  <a class="button" href="{{ url_for('add_student') }}">Add student</a>
+</div>
+
+{% if students %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Major</th>
+        <th scope="col">Year</th>
+        <th scope="col">Email</th>
+        <th scope="col"><span class="visually-hidden">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in students %}
+      <tr>
+        <td class="id">{{ s.student_id }}</td>
+        <td>{{ s.name }}</td>
+        <td>{{ s.major }}</td>
+        <td class="year">{{ s.year }}</td>
+        <td><a href="mailto:{{ s.email }}">{{ s.email }}</a></td>
+        <td class="actions">
+          <a href="{{ url_for('edit_student', doc_id=s.id) }}">Edit</a>
+          <form method="post" action="{{ url_for('delete_student', doc_id=s.id) }}"
+                data-confirm="Delete {{ s.name }}? This cannot be undone.">
+            <button type="submit" class="link-button danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="table-wrap empty">
+  <p>No students yet. Add one, or reset the demo data to bring back the 12 sample students.</p>
+  <a class="button" href="{{ url_for('add_student') }}">Add student</a>
+</div>
+{% endif %}
+
+<section class="reset" aria-label="Demo data">
+  <p>Reset demo data deletes every student, including ones you added, and loads the 12 sample students again.</p>
+  <form method="post" action="{{ url_for('reset_data') }}"
+        data-confirm="Delete all students and load the 12 sample students again?">
+    <button type="submit" class="button danger">Reset demo data</button>
+  </form>
+</section>
+
+<script>
+  // Ask before any destructive action. The message comes from data-confirm,
+  // so names with quotes or apostrophes cannot break the script.
+  document.querySelectorAll("form[data-confirm]").forEach(function (form) {
+    form.addEventListener("submit", function (event) {
+      if (!window.confirm(form.dataset.confirm)) event.preventDefault();
+    });
+  });
+</script>
+{% endblock %}

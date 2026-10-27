@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ app_title }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: {{ app_color }};
+      --on-accent: {{ app_text_color }};
+      --ink: #16202b;
+      --muted: #566273;
+      --line: #dde2e8;
+      --surface: #f4f6f8;
+      --paper: #ffffff;
+      --danger: #b42318;
+      --radius: 6px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: var(--ink);
+      background: var(--surface);
+    }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    /* Header: the band takes APP_COLOR, so a new version is visible at a glance. */
+    .band { background: var(--accent); color: var(--on-accent); }
+    .band-inner {
+      max-width: 64rem; margin: 0 auto; padding: 1.75rem 1.25rem 1.5rem;
+      display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: flex-end; justify-content: space-between;
+    }
+    .band h1 { margin: 0; font-size: 1.75rem; line-height: 1.2; }
+    .band h1 a { text-decoration: none; }
+    .band :focus-visible { outline-color: currentColor; }
+    .served {
+      display: grid; grid-template-columns: auto auto; gap: 0.1rem 0.75rem; margin: 0;
+      font-size: 0.875rem; padding: 0.5rem 0.75rem;
+      border: 1px solid currentColor; border-radius: var(--radius);
+    }
+    .served dt { opacity: 0.85; }
+    .served dd { margin: 0; font-weight: 700; }
+
+    main { max-width: 64rem; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+
+    .flash {
+      margin: 0 0 1.25rem; padding: 0.75rem 1rem; background: var(--paper);
+      border-left: 4px solid var(--accent); border-radius: var(--radius);
+    }
+
+    .button {
+      display: inline-block; font: inherit; font-weight: 700; line-height: 1.2;
+      padding: 0.6rem 1rem; border-radius: var(--radius); cursor: pointer;
+      border: 2px solid var(--ink); background: var(--ink); color: #fff; text-decoration: none;
+    }
+    .button.secondary { background: transparent; color: var(--ink); }
+    .button.danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+    .link-button {
+      font: inherit; background: none; border: none; padding: 0; cursor: pointer;
+      color: var(--ink); text-decoration: underline; text-underline-offset: 2px;
+    }
+    .link-button.danger { color: var(--danger); }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .button, .link-button { transition: opacity 120ms ease; }
+      .button:hover, .link-button:hover { opacity: 0.8; }
+    }
+
+    footer {
+      max-width: 64rem; margin: 0 auto; padding: 1rem 1.25rem 2rem;
+      font-size: 0.875rem; color: var(--muted);
+    }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <header class="band">
+    <div class="band-inner">
+      <h1><a href="{{ url_for('index') }}">{{ app_title }}</a></h1>
+      <dl class="served" aria-label="Served by">
+        <dt>Version</dt><dd>{{ app_version }}</dd>
+        <dt>Instance</dt><dd title="{{ instance_id }}">{{ instance_id[:12] }}{% if instance_id|length > 12 %}…{% endif %}</dd>
+      </dl>
+    </div>
+  </header>
+
+  <main>
+    {% for message in get_flashed_messages() %}
+      <p class="flash" role="status">{{ message }}</p>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    Running on Azure App Service with data in Cosmos DB. The header shows which version and instance answered you.
+  </footer>
+</body>
+</html>
