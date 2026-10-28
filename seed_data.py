@@ -1,10 +1,3 @@
-"""Sample data loaded the first time the app runs, and by "Reset demo data".
-
-Courses and students use fixed IDs, so loading the samples twice is harmless.
-Each student keeps its enrollments inside its own item: in a document
-database, data that is read together is usually stored together.
-"""
-
 SEED_COURSES = [
     {"id": "course-01", "code": "CS 101", "title": "Introduction to Programming", "credits": 3, "instructor": "Dr. Amina Ouazzani"},
     {"id": "course-02", "code": "CS 210", "title": "Data Structures", "credits": 3, "instructor": "Dr. Karim Benali"},

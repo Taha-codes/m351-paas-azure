@@ -31,7 +31,6 @@
     .muted { color: var(--muted); }
     .num { font-variant-numeric: tabular-nums; }
 
-    /* Header: the band takes APP_COLOR, so a new version is visible at a glance. */
     .band { background: var(--accent); color: var(--on-accent); }
     .band :focus-visible { outline-color: currentColor; }
     .band-inner { max-width: 68rem; margin: 0 auto; padding: 1.5rem 1.25rem 0; }
@@ -133,8 +132,6 @@
   </footer>
 
   <script>
-    // Ask before any destructive action. The message comes from data-confirm,
-    // so names with quotes or apostrophes cannot break the script.
     document.querySelectorAll("form[data-confirm]").forEach(function (form) {
       form.addEventListener("submit", function (event) {
         if (!window.confirm(form.dataset.confirm)) event.preventDefault();
