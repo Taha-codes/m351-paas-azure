@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – {{ app_title }}{% endblock %}
+{% block head %}
+<style>
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat .value { font-size: 2rem; font-weight: 700; line-height: 1.1; margin-top: 0.25rem; }
+  .stat .label { color: var(--muted); font-size: 0.9rem; }
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr)); gap: 1rem; }
+  .card h3 { margin: 0 0 0.75rem; font-size: 1.05rem; }
+  .bar-row a { text-decoration: none; }
+  .bar-row a:hover { text-decoration: underline; }
+  ol.ranking { margin: 0; padding: 0; list-style: none; }
+  ol.ranking li { display: grid; grid-template-columns: 1.75rem 1fr auto; gap: 0.5rem; padding: 0.45rem 0; border-bottom: 1px solid var(--line); }
+  ol.ranking li:last-child { border-bottom: none; }
+  ol.ranking .rank { color: var(--muted); }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h2>Dashboard</h2>
+    <p class="muted">A summary of every student, course and grade in the database.</p>
+  </div>
+</div>
+
+<section class="stats" aria-label="Key numbers">
+  <div class="card stat"><div class="label">Students</div><div class="value num">{{ stats.students }}</div></div>
+  <div class="card stat"><div class="label">Courses</div><div class="value num">{{ stats.courses }}</div></div>
+  <div class="card stat"><div class="label">Enrollments</div><div class="value num">{{ stats.enrollments }}</div></div>
+  <div class="card stat"><div class="label">Average GPA</div><div class="value num">{{ stats.average_gpa|gpa }}</div></div>
+</section>
+
+<div class="grid-2">
+  <section class="card">
+    <h3>Students per major</h3>
+    {% for m in majors %}
+    <div class="bar-row">
+      <a href="{{ url_for('list_students', major=m.name) }}">{{ m.name }}</a>
+      <div class="bar-track"><div class="bar-fill" style="width: {{ m.width }}%"></div></div>
+      <span class="num">{{ m.count }}</span>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section class="card">
+    <h3>Most popular courses</h3>
+    {% for c in top_courses %}
+    <div class="bar-row">
+      <a href="{{ url_for('view_course', doc_id=c.id) }}">{{ c.code }} · {{ c.title }}</a>
+      <div class="bar-track"><div class="bar-fill" style="width: {{ c.width }}%"></div></div>
+      <span class="num">{{ c.enrolled }}</span>
+    </div>
+    {% else %}
+    <p class="muted">No courses yet.</p>
+    {% endfor %}
+  </section>
+
+  <section class="card">
+    <h3>Grade distribution</h3>
+    {% for g in grade_bars %}
+    <div class="bar-row">
+      <span>{{ g.label }}</span>
+      <div class="bar-track"><div class="bar-fill" style="width: {{ g.width }}%"></div></div>
+      <span class="num">{{ g.count }}</span>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section class="card">
+    <h3>Highest GPA</h3>
+    {% if top_students %}
+    <ol class="ranking">
+      {% for s in top_students %}
+      <li><span class="rank num">{{ loop.index }}.</span><a href="{{ url_for('view_student', doc_id=s.id) }}">{{ s.name }}</a><span class="num">{{ s.gpa|gpa }}</span></li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="muted">No graded courses yet.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

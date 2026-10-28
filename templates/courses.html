@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Courses – {{ app_title }}{% endblock %}
+{% block head %}<style> table { min-width: 44rem; } </style>{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h2>Courses</h2>
+    <p class="muted">{{ courses|length }} courses</p>
+  </div>
+  <a class="button" href="{{ url_for('add_course') }}">Add course</a>
+</div>
+
+{% if courses %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Code</th><th scope="col">Title</th><th scope="col">Credits</th>
+        <th scope="col">Instructor</th><th scope="col">Students</th><th scope="col">Average grade</th>
+        <th scope="col"><span class="visually-hidden">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in courses %}
+      <tr>
+        <td class="num"><a href="{{ url_for('view_course', doc_id=c.id) }}">{{ c.code }}</a></td>
+        <td>{{ c.title }}</td>
+        <td class="num">{{ c.credits }}</td>
+        <td>{{ c.instructor }}</td>
+        <td class="num">{{ c.enrolled }}</td>
+        <td class="num">{{ c.average|gpa }}</td>
+        <td class="actions">
+          <a href="{{ url_for('edit_course', doc_id=c.id) }}">Edit</a>
+          <form method="post" action="{{ url_for('delete_course', doc_id=c.id) }}" data-confirm="Delete {{ c.code }}? It will also be removed from every student's record.">
+            <button type="submit" class="link-button danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="table-wrap empty"><p>No courses yet.</p><a class="button" href="{{ url_for('add_course') }}">Add course</a></div>
+{% endif %}
+{% endblock %}

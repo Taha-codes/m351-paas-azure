@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Students – {{ app_title }}{% endblock %}
+{% block head %}
+<style>
+  .filters { display: grid; grid-template-columns: 2fr 1.4fr 0.8fr auto; gap: 0.75rem; align-items: end; margin-bottom: 1rem; }
+  .filters .field { margin: 0; }
+  .filters .buttons { display: flex; gap: 0.5rem; }
+  @media (max-width: 44rem) { .filters { grid-template-columns: 1fr 1fr; } .filters .search, .filters .buttons { grid-column: 1 / -1; } }
+  table { min-width: 48rem; }
+  td.id { color: var(--muted); }
+  .reset { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; }
+  .reset p { margin: 0; color: var(--muted); max-width: 40rem; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h2>Students</h2>
+    <p class="muted">{% if students|length == total %}{{ total }} students{% else %}Showing {{ students|length }} of {{ total }} students{% endif %}</p>
+  </div>
+  <a class="button" href="{{ url_for('add_student') }}">Add student</a>
+</div>
+
+<form class="filters" method="get" action="{{ url_for('list_students') }}" role="search">
+  <div class="field search">
+    <label for="q">Search</label>
+    <input id="q" name="q" value="{{ filters.q }}" placeholder="Name, student ID or email">
+  </div>
+  <div class="field">
+    <label for="major">Major</label>
+    <select id="major" name="major">
+      <option value="">All majors</option>
+      {% for m in majors %}<option{% if filters.major == m %} selected{% endif %}>{{ m }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="year">Year</label>
+    <select id="year" name="year">
+      <option value="">All</option>
+      {% for y in range(1, 6) %}<option value="{{ y }}"{% if filters.year == y|string %} selected{% endif %}>{{ y }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="buttons">
+    <button class="button" type="submit">Search</button>
+    {% if filters.q or filters.major or filters.year %}<a class="button secondary" href="{{ url_for('list_students') }}">Clear</a>{% endif %}
+  </div>
+</form>
+
+{% if students %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">ID</th><th scope="col">Name</th><th scope="col">Major</th>
+        <th scope="col">Year</th><th scope="col">Courses</th><th scope="col">GPA</th>
+        <th scope="col"><span class="visually-hidden">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in students %}
+      <tr>
+        <td class="id num">{{ s.student_id }}</td>
+        <td><a href="{{ url_for('view_student', doc_id=s.id) }}">{{ s.name }}</a></td>
+        <td>{{ s.major }}</td>
+        <td class="num">{{ s.year }}</td>
+        <td class="num">{{ s.course_count }}</td>
+        <td class="num">{{ s.gpa|gpa }}</td>
+        <td class="actions">
+          <a href="{{ url_for('edit_student', doc_id=s.id) }}">Edit</a>
+          <form method="post" action="{{ url_for('delete_student', doc_id=s.id) }}" data-confirm="Delete {{ s.name }} and their course records? This cannot be undone.">
+            <button type="submit" class="link-button danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% elif total %}
+<div class="table-wrap empty"><p>No students match your search.</p><a class="button secondary" href="{{ url_for('list_students') }}">Clear the search</a></div>
+{% else %}
+<div class="table-wrap empty"><p>No students yet. Add one, or reset the demo data to bring back the sample students and courses.</p><a class="button" href="{{ url_for('add_student') }}">Add student</a></div>
+{% endif %}
+
+<section class="reset" aria-label="Demo data">
+  <p>Reset demo data deletes every student and course, including ones you added, and loads the sample data again.</p>
+  <form method="post" action="{{ url_for('reset_data') }}" data-confirm="Delete all students and courses and load the sample data again?">
+    <button type="submit" class="button danger">Reset demo data</button>
+  </form>
+</section>
+{% endblock %}

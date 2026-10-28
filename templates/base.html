@@ -23,78 +23,107 @@
     body {
       margin: 0;
       font-family: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
-      font-size: 1rem;
-      line-height: 1.5;
-      color: var(--ink);
-      background: var(--surface);
+      font-size: 1rem; line-height: 1.5; color: var(--ink); background: var(--surface);
     }
     a { color: inherit; }
     :focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
     .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .muted { color: var(--muted); }
+    .num { font-variant-numeric: tabular-nums; }
 
     /* Header: the band takes APP_COLOR, so a new version is visible at a glance. */
     .band { background: var(--accent); color: var(--on-accent); }
-    .band-inner {
-      max-width: 64rem; margin: 0 auto; padding: 1.75rem 1.25rem 1.5rem;
-      display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: flex-end; justify-content: space-between;
-    }
+    .band :focus-visible { outline-color: currentColor; }
+    .band-inner { max-width: 68rem; margin: 0 auto; padding: 1.5rem 1.25rem 0; }
+    .band-top { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: flex-end; justify-content: space-between; }
     .band h1 { margin: 0; font-size: 1.75rem; line-height: 1.2; }
     .band h1 a { text-decoration: none; }
-    .band :focus-visible { outline-color: currentColor; }
     .served {
       display: grid; grid-template-columns: auto auto; gap: 0.1rem 0.75rem; margin: 0;
-      font-size: 0.875rem; padding: 0.5rem 0.75rem;
-      border: 1px solid currentColor; border-radius: var(--radius);
+      font-size: 0.875rem; padding: 0.5rem 0.75rem; border: 1px solid currentColor; border-radius: var(--radius);
     }
     .served dt { opacity: 0.85; }
     .served dd { margin: 0; font-weight: 700; }
+    .nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; margin-top: 1.25rem; }
+    .nav a { text-decoration: none; padding: 0.5rem 0 0.6rem; border-bottom: 3px solid transparent; font-weight: 700; opacity: 0.85; }
+    .nav a:hover { opacity: 1; }
+    .nav a[aria-current="page"] { border-bottom-color: currentColor; opacity: 1; }
 
-    main { max-width: 64rem; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+    main { max-width: 68rem; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+    .flash { margin: 0 0 1.25rem; padding: 0.75rem 1rem; background: var(--paper); border-left: 4px solid var(--accent); border-radius: var(--radius); }
+    .flash.error { border-left-color: var(--danger); }
 
-    .flash {
-      margin: 0 0 1.25rem; padding: 0.75rem 1rem; background: var(--paper);
-      border-left: 4px solid var(--accent); border-radius: var(--radius);
-    }
+    .page-head { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .page-head h2 { margin: 0; font-size: 1.5rem; line-height: 1.25; }
+    .page-head p { margin: 0.25rem 0 0; }
+    .actions-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+    .section-title { margin: 2rem 0 0.75rem; font-size: 1.15rem; }
 
     .button {
-      display: inline-block; font: inherit; font-weight: 700; line-height: 1.2;
-      padding: 0.6rem 1rem; border-radius: var(--radius); cursor: pointer;
-      border: 2px solid var(--ink); background: var(--ink); color: #fff; text-decoration: none;
+      display: inline-block; font: inherit; font-weight: 700; line-height: 1.2; padding: 0.6rem 1rem;
+      border-radius: var(--radius); cursor: pointer; border: 2px solid var(--ink); background: var(--ink); color: #fff; text-decoration: none;
     }
     .button.secondary { background: transparent; color: var(--ink); }
     .button.danger { background: transparent; color: var(--danger); border-color: var(--danger); }
-    .link-button {
-      font: inherit; background: none; border: none; padding: 0; cursor: pointer;
-      color: var(--ink); text-decoration: underline; text-underline-offset: 2px;
-    }
+    .button.small { padding: 0.35rem 0.7rem; font-size: 0.875rem; }
+    .link-button { font: inherit; background: none; border: none; padding: 0; cursor: pointer; color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
     .link-button.danger { color: var(--danger); }
-
     @media (prefers-reduced-motion: no-preference) {
-      .button, .link-button { transition: opacity 120ms ease; }
+      .button, .link-button, .nav a { transition: opacity 120ms ease; }
       .button:hover, .link-button:hover { opacity: 0.8; }
     }
 
-    footer {
-      max-width: 64rem; margin: 0 auto; padding: 1rem 1.25rem 2rem;
-      font-size: 0.875rem; color: var(--muted);
+    .card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; }
+    .table-wrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 0.7rem 1rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    th { font-size: 0.875rem; color: var(--muted); background: var(--surface); white-space: nowrap; }
+    tbody tr:last-child td { border-bottom: none; }
+    td.actions { white-space: nowrap; text-align: right; }
+    td.actions > * + * { margin-left: 1rem; }
+    td.actions form { display: inline; }
+    .empty { padding: 2.5rem 1.25rem; text-align: center; }
+
+    label { display: block; font-weight: 700; margin-bottom: 0.3rem; }
+    input, select {
+      width: 100%; font: inherit; color: inherit; padding: 0.55rem 0.7rem;
+      border: 1px solid #a9b3bf; border-radius: var(--radius); background: #fff;
     }
+    .field { margin-bottom: 1rem; }
+    .error { color: var(--danger); font-size: 0.875rem; margin: 0.3rem 0 0; }
+    [aria-invalid="true"] { border-color: var(--danger); }
+
+    .bar-row { display: grid; grid-template-columns: minmax(7rem, 15rem) minmax(4rem, 1fr) 2rem; gap: 0.75rem; align-items: center; margin: 0.45rem 0; }
+    .bar-track { background: var(--surface); border-radius: 999px; height: 0.75rem; overflow: hidden; }
+    .bar-fill { background: var(--accent); height: 100%; border-radius: 999px; }
+
+    footer { max-width: 68rem; margin: 0 auto; padding: 1rem 1.25rem 2rem; font-size: 0.875rem; color: var(--muted); }
   </style>
   {% block head %}{% endblock %}
 </head>
 <body>
+  {% set section = request.endpoint or "" %}
   <header class="band">
     <div class="band-inner">
-      <h1><a href="{{ url_for('index') }}">{{ app_title }}</a></h1>
-      <dl class="served" aria-label="Served by">
-        <dt>Version</dt><dd>{{ app_version }}</dd>
-        <dt>Instance</dt><dd title="{{ instance_id }}">{{ instance_id[:12] }}{% if instance_id|length > 12 %}…{% endif %}</dd>
-      </dl>
+      <div class="band-top">
+        <h1><a href="{{ url_for('home') }}">{{ app_title }}</a></h1>
+        <dl class="served" aria-label="Served by">
+          <dt>Version</dt><dd>{{ app_version }}</dd>
+          <dt>Instance</dt><dd title="{{ instance_id }}">{{ instance_id[:12] }}{% if instance_id|length > 12 %}…{% endif %}</dd>
+        </dl>
+      </div>
+      <nav class="nav" aria-label="Main">
+        {% if dashboard_enabled %}<a href="{{ url_for('home') }}" {% if section == 'home' %}aria-current="page"{% endif %}>Dashboard</a>{% endif %}
+        <a href="{{ url_for('list_students') }}" {% if 'student' in section or 'enrollment' in section %}aria-current="page"{% endif %}>Students</a>
+        <a href="{{ url_for('list_courses') }}" {% if 'course' in section %}aria-current="page"{% endif %}>Courses</a>
+        <a href="{{ url_for('platform') }}" {% if section == 'platform' %}aria-current="page"{% endif %}>Platform</a>
+      </nav>
     </div>
   </header>
 
   <main>
-    {% for message in get_flashed_messages() %}
-      <p class="flash" role="status">{{ message }}</p>
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+      <p class="flash {{ category }}" role="status">{{ message }}</p>
     {% endfor %}
     {% block content %}{% endblock %}
   </main>
@@ -102,5 +131,15 @@
   <footer>
     Running on Azure App Service with data in Cosmos DB. The header shows which version and instance answered you.
   </footer>
+
+  <script>
+    // Ask before any destructive action. The message comes from data-confirm,
+    // so names with quotes or apostrophes cannot break the script.
+    document.querySelectorAll("form[data-confirm]").forEach(function (form) {
+      form.addEventListener("submit", function (event) {
+        if (!window.confirm(form.dataset.confirm)) event.preventDefault();
+      });
+    });
+  </script>
 </body>
 </html>

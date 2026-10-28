@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ "Add course" if mode == "add" else "Edit course" }} – {{ app_title }}{% endblock %}
+{% block head %}
+<style>
+  .card { max-width: 34rem; }
+  .card h2 { margin: 0 0 1.25rem; font-size: 1.25rem; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+  @media (max-width: 30rem) { .row { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+{% macro error(name) %}{% if errors[name] %}<p class="error" id="{{ name }}-error">{{ errors[name] }}</p>{% endif %}{% endmacro %}
+{% macro invalid(name) %}{% if errors[name] %}aria-invalid="true" aria-describedby="{{ name }}-error"{% endif %}{% endmacro %}
+{% block content %}
+<div class="card">
+  <h2>{{ "Add course" if mode == "add" else "Edit " ~ course.code }}</h2>
+  <form method="post" novalidate>
+    <div class="row">
+      <div class="field">
+        <label for="code">Course code</label>
+        <input id="code" name="code" value="{{ course.code or '' }}" placeholder="CS 420" {{ invalid("code") }}>
+        {{ error("code") }}
+      </div>
+      <div class="field">
+        <label for="credits">Credits</label>
+        <select id="credits" name="credits" {{ invalid("credits") }}>
+          <option value="">Choose…</option>
+          {% for n in range(1, 7) %}<option value="{{ n }}"{% if course.credits|string == n|string %} selected{% endif %}>{{ n }}</option>{% endfor %}
+        </select>
+        {{ error("credits") }}
+      </div>
+    </div>
+    <div class="field">
+      <label for="title">Title</label>
+      <input id="title" name="title" value="{{ course.title or '' }}" autocomplete="off" {{ invalid("title") }}>
+      {{ error("title") }}
+    </div>
+    <div class="field">
+      <label for="instructor">Instructor</label>
+      <input id="instructor" name="instructor" value="{{ course.instructor or '' }}" autocomplete="off" {{ invalid("instructor") }}>
+      {{ error("instructor") }}
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="button">{{ "Add course" if mode == "add" else "Save changes" }}</button>
+      <a class="button secondary" href="{{ url_for('view_course', doc_id=course.id) if mode == 'edit' else url_for('list_courses') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

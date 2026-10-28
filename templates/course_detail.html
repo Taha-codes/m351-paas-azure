@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ course.code }} – {{ app_title }}{% endblock %}
+{% block head %}
+<style>
+  .profile { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1rem; margin: 0; }
+  .profile dt { color: var(--muted); font-size: 0.875rem; }
+  .profile dd { margin: 0.15rem 0 0; font-weight: 700; }
+  table { min-width: 36rem; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="muted"><a href="{{ url_for('list_courses') }}">Courses</a> / {{ course.code }}</p>
+    <h2>{{ course.code }} · {{ course.title }}</h2>
+  </div>
+  <div class="actions-row">
+    <a class="button secondary" href="{{ url_for('edit_course', doc_id=course.id) }}">Edit course</a>
+    <form method="post" action="{{ url_for('delete_course', doc_id=course.id) }}" data-confirm="Delete {{ course.code }}? It will also be removed from every student's record.">
+      <button type="submit" class="button danger">Delete</button>
+    </form>
+  </div>
+</div>
+
+<section class="card">
+  <dl class="profile">
+    <div><dt>Instructor</dt><dd>{{ course.instructor }}</dd></div>
+    <div><dt>Credits</dt><dd class="num">{{ course.credits }}</dd></div>
+    <div><dt>Students enrolled</dt><dd class="num">{{ roster|length }}</dd></div>
+    <div><dt>Average grade points</dt><dd class="num">{{ average|gpa }}</dd></div>
+  </dl>
+</section>
+
+<h3 class="section-title">Students in this course</h3>
+{% if roster %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th scope="col">Student</th><th scope="col">ID</th><th scope="col">Major</th><th scope="col">Grade</th></tr></thead>
+    <tbody>
+      {% for r in roster %}
+      <tr>
+        <td><a href="{{ url_for('view_student', doc_id=r.id) }}">{{ r.name }}</a></td>
+        <td class="num muted">{{ r.student_id }}</td>
+        <td>{{ r.major }}</td>
+        <td>{{ r.grade|grade }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="table-wrap empty"><p>No students are enrolled yet. Enroll students from their profile pages.</p></div>
+{% endif %}
+{% endblock %}

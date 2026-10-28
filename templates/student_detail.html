@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}{{ student.name }} – {{ app_title }}{% endblock %}
+{% block head %}
+<style>
+  .profile { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1rem; margin: 0; }
+  .profile div { margin: 0; }
+  .profile dt { color: var(--muted); font-size: 0.875rem; }
+  .profile dd { margin: 0.15rem 0 0; font-weight: 700; }
+  .profile .big { font-size: 1.75rem; line-height: 1.1; }
+  table { min-width: 40rem; }
+  td.grade form { display: flex; gap: 0.5rem; align-items: center; }
+  td.grade select { width: auto; min-width: 9rem; padding: 0.35rem 0.5rem; }
+  .enroll { display: grid; grid-template-columns: 2fr 1fr auto; gap: 0.75rem; align-items: end; margin-top: 1rem; }
+  .enroll .field { margin: 0; }
+  @media (max-width: 40rem) { .enroll { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="muted"><a href="{{ url_for('list_students') }}">Students</a> / {{ student.student_id }}</p>
+    <h2>{{ student.name }}</h2>
+  </div>
+  <div class="actions-row">
+    <a class="button secondary" href="{{ url_for('edit_student', doc_id=student.id) }}">Edit details</a>
+    <form method="post" action="{{ url_for('delete_student', doc_id=student.id) }}" data-confirm="Delete {{ student.name }} and their course records? This cannot be undone.">
+      <button type="submit" class="button danger">Delete</button>
+    </form>
+  </div>
+</div>
+
+<section class="card">
+  <dl class="profile">
+    <div><dt>GPA</dt><dd class="big num">{{ student.gpa|gpa }}</dd></div>
+    <div><dt>Major</dt><dd>{{ student.major }}</dd></div>
+    <div><dt>Year</dt><dd class="num">{{ student.year }}</dd></div>
+    <div><dt>Credits completed</dt><dd class="num">{{ credits_completed }}{% if credits_in_progress %} <span class="muted">(+{{ credits_in_progress }} in progress)</span>{% endif %}</dd></div>
+    <div><dt>Email</dt><dd><a href="mailto:{{ student.email }}">{{ student.email }}</a></dd></div>
+  </dl>
+</section>
+
+<h3 class="section-title">Courses and grades</h3>
+{% if enrollments %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th scope="col">Course</th><th scope="col">Title</th><th scope="col">Credits</th><th scope="col">Grade</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead>
+    <tbody>
+      {% for e in enrollments %}
+      <tr>
+        <td class="num"><a href="{{ url_for('view_course', doc_id=e.id) }}">{{ e.code }}</a></td>
+        <td>{{ e.title }}</td>
+        <td class="num">{{ e.credits }}</td>
+        <td class="grade">
+          <form method="post" action="{{ url_for('update_enrollment', doc_id=student.id, course_id=e.id) }}">
+            <label class="visually-hidden" for="grade-{{ e.id }}">Grade for {{ e.code }}</label>
+            <select id="grade-{{ e.id }}" name="grade">
+              {% for g in grades %}<option value="{{ g }}"{% if g == e.grade %} selected{% endif %}>{{ g|grade }}</option>{% endfor %}
+            </select>
+            <button type="submit" class="button secondary small">Save</button>
+          </form>
+        </td>
+        <td class="actions">
+          <form method="post" action="{{ url_for('remove_enrollment', doc_id=student.id, course_id=e.id) }}" data-confirm="Remove {{ e.code }} from {{ student.name }}'s courses?">
+            <button type="submit" class="link-button danger">Remove</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="table-wrap empty"><p>{{ student.name }} is not enrolled in any course yet.</p></div>
+{% endif %}
+
+{% if available_courses %}
+<form class="card enroll" method="post" action="{{ url_for('add_enrollment', doc_id=student.id) }}">
+  <div class="field">
+    <label for="course_id">Enroll in a course</label>
+    <select id="course_id" name="course_id" required>
+      {% for c in available_courses %}<option value="{{ c.id }}">{{ c.code }} · {{ c.title }} ({{ c.credits }} credits)</option>{% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="new-grade">Grade</label>
+    <select id="new-grade" name="grade">
+      {% for g in grades %}<option value="{{ g }}"{% if g == 'IP' %} selected{% endif %}>{{ g|grade }}</option>{% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="button">Enroll</button>
+</form>
+{% endif %}
+{% endblock %}
